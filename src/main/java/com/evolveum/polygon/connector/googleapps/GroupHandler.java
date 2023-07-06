@@ -24,9 +24,9 @@
 
 package com.evolveum.polygon.connector.googleapps;
 
-import com.google.api.services.admin.directory.Directory;
-import com.google.api.services.admin.directory.model.Group;
-import com.google.api.services.admin.directory.model.Member;
+import com.google.api.services.directory.Directory;
+import com.google.api.services.directory.model.Group;
+import com.google.api.services.directory.model.Member;
 import org.identityconnectors.common.StringUtil;
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
@@ -40,7 +40,7 @@ import static com.evolveum.polygon.connector.googleapps.GoogleAppsConnector.*;
 
 /**
  * A GroupHandler is a util class to cover all Group related operations.
- * 
+ *
  * @author Laszlo Hordos
  */
 public class GroupHandler implements FilterVisitor<Void, Directory.Groups.List> {
@@ -51,7 +51,7 @@ public class GroupHandler implements FilterVisitor<Void, Directory.Groups.List> 
     private static final Log logger = Log.getLog(GroupHandler.class);
 
     public Void visitAndFilter(Directory.Groups.List list, AndFilter andFilter) {
-            logger.warn("Throwing get exception in visitAndFilter");
+        logger.warn("Throwing get exception in visitAndFilter");
         throw getException();
     }
 
@@ -66,9 +66,9 @@ public class GroupHandler implements FilterVisitor<Void, Directory.Groups.List> 
     }
 
     public Void visitContainsAllValuesFilter(Directory.Groups.List list,
-            ContainsAllValuesFilter containsAllValuesFilter) {
+                                             ContainsAllValuesFilter containsAllValuesFilter) {
         //TODO needed for removing deleted users from groups
-            logger.warn("Throwing get exception in visitContainsAllValuesFilter");
+        logger.warn("Throwing get exception in visitContainsAllValuesFilter");
         throw getException();
     }
 
@@ -76,7 +76,7 @@ public class GroupHandler implements FilterVisitor<Void, Directory.Groups.List> 
         return new UnsupportedOperationException(
                 "Only EqualsFilter(['domain','customer','userKey']) and ContainsFilter('members') are supported");
     }
-    
+
     protected RuntimeException getException(EqualsFilter equalsFilter) {
         return new UnsupportedOperationException(
                 "filter is:" + equalsFilter + "Only EqualsFilter(['domain','customer','userKey']) and ContainsFilter('members') are supported");
@@ -105,7 +105,7 @@ public class GroupHandler implements FilterVisitor<Void, Directory.Groups.List> 
                 list.setUserKey(AttributeUtil.getStringValue(equalsFilter.getAttribute()));
             }
         } else {
-            throw getException(equalsFilter) ; 
+            throw getException(equalsFilter);
         }
 
         return null;
@@ -116,12 +116,12 @@ public class GroupHandler implements FilterVisitor<Void, Directory.Groups.List> 
     }
 
     public Void visitGreaterThanFilter(Directory.Groups.List list,
-            GreaterThanFilter greaterThanFilter) {
+                                       GreaterThanFilter greaterThanFilter) {
         throw getException();
     }
 
     public Void visitGreaterThanOrEqualFilter(Directory.Groups.List list,
-            GreaterThanOrEqualFilter greaterThanOrEqualFilter) {
+                                              GreaterThanOrEqualFilter greaterThanOrEqualFilter) {
         throw getException();
     }
 
@@ -130,7 +130,7 @@ public class GroupHandler implements FilterVisitor<Void, Directory.Groups.List> 
     }
 
     public Void visitLessThanOrEqualFilter(Directory.Groups.List list,
-            LessThanOrEqualFilter lessThanOrEqualFilter) {
+                                           LessThanOrEqualFilter lessThanOrEqualFilter) {
         throw getException();
     }
 
@@ -151,9 +151,8 @@ public class GroupHandler implements FilterVisitor<Void, Directory.Groups.List> 
     }
 
     @Override
-    public Void visitEqualsIgnoreCaseFilter(Directory.Groups.List list, EqualsIgnoreCaseFilter filter)
-    {
-         throw getException();
+    public Void visitEqualsIgnoreCaseFilter(Directory.Groups.List list, EqualsIgnoreCaseFilter filter) {
+        throw getException();
     }
 
     // /////////////
@@ -221,9 +220,9 @@ public class GroupHandler implements FilterVisitor<Void, Directory.Groups.List> 
 
         // optional
         builder.addAttributeInfo(AttributeInfoBuilder.define(GROUP_KEY_ATTR).setUpdateable(false)
-        /* .setCreateable(false) */.setRequired(true).build());
+                /* .setCreateable(false) */.setRequired(true).build());
         builder.addAttributeInfo(AttributeInfoBuilder.define(EMAIL_ATTR).setUpdateable(false)
-        /* .setCreateable(false) */.setRequired(true).build());
+                /* .setCreateable(false) */.setRequired(true).build());
 
         builder.addAttributeInfo(AttributeInfoBuilder.build(ROLE_ATTR));
         builder.addAttributeInfo(AttributeInfoBuilder.define(TYPE_ATTR).setUpdateable(false)
@@ -234,7 +233,7 @@ public class GroupHandler implements FilterVisitor<Void, Directory.Groups.List> 
 
     // https://support.google.com/a/answer/33386
     public static Directory.Groups.Insert createGroup(Directory.Groups groups,
-            AttributesAccessor attributes) {
+                                                      AttributesAccessor attributes) {
         Group group = new Group();
         group.setEmail(GoogleAppsUtil.getName(attributes.getName()));
         // Optional
@@ -251,7 +250,7 @@ public class GroupHandler implements FilterVisitor<Void, Directory.Groups.List> 
     }
 
     public static Directory.Groups.Patch updateGroup(Directory.Groups groups, String groupKey,
-            AttributesAccessor attributes) {
+                                                     AttributesAccessor attributes) {
         Group group = null;
 
         Name email = attributes.getName();
@@ -301,7 +300,7 @@ public class GroupHandler implements FilterVisitor<Void, Directory.Groups.List> 
     }
 
     public static Directory.Members.Insert createMember(Directory.Members service,
-            AttributesAccessor attributes) {
+                                                        AttributesAccessor attributes) {
         String groupKey = attributes.findString(GROUP_KEY_ATTR);
         if (StringUtil.isBlank(groupKey)) {
             throw new InvalidAttributeValueException(
@@ -319,7 +318,7 @@ public class GroupHandler implements FilterVisitor<Void, Directory.Groups.List> 
     }
 
     public static Directory.Members.Insert createMember(Directory.Members service, String groupKey,
-            String memberKey, String role) {
+                                                        String memberKey, String role) {
 
         Member content = new Member();
         content.setEmail(memberKey);
@@ -339,7 +338,7 @@ public class GroupHandler implements FilterVisitor<Void, Directory.Groups.List> 
     }
 
     public static Directory.Members.Patch updateMembers(Directory.Members service, String groupKey,
-            String memberKey, String role) {
+                                                        String memberKey, String role) {
         Member content = new Member();
         content.setEmail(memberKey);
 
@@ -359,7 +358,7 @@ public class GroupHandler implements FilterVisitor<Void, Directory.Groups.List> 
     }
 
     public static Directory.Members.Delete deleteMembers(Directory.Members service,
-            String groupKey, String memberKey) {
+                                                         String groupKey, String memberKey) {
         try {
             return service.delete(groupKey, memberKey);
             // } catch (HttpResponseException e){

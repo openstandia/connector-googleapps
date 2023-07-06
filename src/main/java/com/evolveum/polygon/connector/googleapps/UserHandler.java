@@ -23,11 +23,11 @@
  */
 package com.evolveum.polygon.connector.googleapps;
 
-import com.google.api.services.admin.directory.Directory;
-import com.google.api.services.admin.directory.model.Alias;
-import com.google.api.services.admin.directory.model.User;
-import com.google.api.services.admin.directory.model.UserName;
-import com.google.api.services.admin.directory.model.UserPhoto;
+import com.google.api.services.directory.Directory;
+import com.google.api.services.directory.model.Alias;
+import com.google.api.services.directory.model.User;
+import com.google.api.services.directory.model.UserName;
+import com.google.api.services.directory.model.UserPhoto;
 import com.google.common.base.CharMatcher;
 import com.google.common.escape.Escaper;
 import com.google.common.escape.Escapers;
@@ -39,19 +39,18 @@ import org.identityconnectors.common.security.SecurityUtil;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
 import org.identityconnectors.framework.common.exceptions.InvalidAttributeValueException;
 import org.identityconnectors.framework.common.objects.*;
-import org.identityconnectors.framework.common.objects.filter.*;
 import org.identityconnectors.framework.common.objects.AttributeInfo.Flags;
+import org.identityconnectors.framework.common.objects.filter.*;
 
 import java.io.IOException;
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.EnumSet;
 
 import static com.evolveum.polygon.connector.googleapps.GoogleAppsConnector.ID_ATTR;
 import static com.evolveum.polygon.connector.googleapps.GoogleAppsConnector.PHOTO_ATTR;
 
 /**
- *
  * @author Laszlo Hordos
  */
 public class UserHandler implements FilterVisitor<StringBuilder, Directory.Users.List> {
@@ -202,13 +201,13 @@ public class UserHandler implements FilterVisitor<StringBuilder, Directory.Users
      * @return
      */
     protected StringBuilder getStringBuilder(Attribute attribute, char operator, Character postfix,
-            String filedName) {
+                                             String filedName) {
         StringBuilder builder = new StringBuilder();
         builder.append(filedName).append(operator);
         String stringValue = AttributeUtil.getAsStringValue(attribute);
         if (StringUtil.isNotBlank(stringValue)) {
             stringValue = STRING_ESCAPER.escape(stringValue);
-            if (CharMatcher.WHITESPACE.matchesAnyOf(stringValue)) {
+            if (CharMatcher.whitespace().matchesAnyOf(stringValue)) {
                 builder.append('\'').append(stringValue);
                 if (null != postfix) {
                     builder.append(postfix);
@@ -263,7 +262,7 @@ public class UserHandler implements FilterVisitor<StringBuilder, Directory.Users
     }
 
     public StringBuilder visitContainsAllValuesFilter(Directory.Users.List list,
-            ContainsAllValuesFilter filter) {
+                                                      ContainsAllValuesFilter filter) {
         return null;
     }
 
@@ -276,7 +275,7 @@ public class UserHandler implements FilterVisitor<StringBuilder, Directory.Users
     }
 
     public StringBuilder visitGreaterThanOrEqualFilter(Directory.Users.List list,
-            GreaterThanOrEqualFilter filter) {
+                                                       GreaterThanOrEqualFilter filter) {
         return null;
     }
 
@@ -285,7 +284,7 @@ public class UserHandler implements FilterVisitor<StringBuilder, Directory.Users
     }
 
     public StringBuilder visitLessThanOrEqualFilter(Directory.Users.List list,
-            LessThanOrEqualFilter filter) {
+                                                    LessThanOrEqualFilter filter) {
         return null;
     }
 
@@ -302,8 +301,7 @@ public class UserHandler implements FilterVisitor<StringBuilder, Directory.Users
     }
 
     @Override
-    public StringBuilder visitEqualsIgnoreCaseFilter(Directory.Users.List list, EqualsIgnoreCaseFilter filter)
-    {
+    public StringBuilder visitEqualsIgnoreCaseFilter(Directory.Users.List list, EqualsIgnoreCaseFilter filter) {
         return null;
     }
 
@@ -450,7 +448,7 @@ public class UserHandler implements FilterVisitor<StringBuilder, Directory.Users
 
         builder.addAttributeInfo(AttributeInfoBuilder.define(OperationalAttributes.PASSWORD_NAME,
                 GuardedString.class).setRequired(true).setReadable(false).setReturnedByDefault(
-                        false).build());
+                false).build());
 
         builder.addAttributeInfo(AttributeInfoBuilder.build(SUSPENDED_ATTR, Boolean.class));
         builder.addAttributeInfo(AttributeInfoBuilder.define(SUSPENSION_REASON_ATTR).setUpdateable(
@@ -512,7 +510,7 @@ public class UserHandler implements FilterVisitor<StringBuilder, Directory.Users
         attributes.add(subjectId.build());
         builder.addAttributeInfo(AttributeInfoBuilder.define("groups").setNativeName("__GROUPS__").setMultiValued(true).setReturnedByDefault(true).build());
         */
-        AttributeInfo GROUPS = AttributeInfoBuilder.build( PredefinedAttributes.GROUPS_NAME, String.class, EnumSet.of(Flags.MULTIVALUED));
+        AttributeInfo GROUPS = AttributeInfoBuilder.build(PredefinedAttributes.GROUPS_NAME, String.class, EnumSet.of(Flags.MULTIVALUED));
         builder.addAttributeInfo(GROUPS);
 
         return builder.build();
@@ -520,7 +518,7 @@ public class UserHandler implements FilterVisitor<StringBuilder, Directory.Users
 
     // https://support.google.com/a/answer/33386
     public static Directory.Users.Insert createUser(Directory.Users users,
-            AttributesAccessor attributes) {
+                                                    AttributesAccessor attributes) {
         User user = new User();
         user.setPrimaryEmail(GoogleAppsUtil.getName(attributes.getName()));
         GuardedString password = attributes.getPassword();
@@ -578,7 +576,7 @@ public class UserHandler implements FilterVisitor<StringBuilder, Directory.Users
     }
 
     public static Directory.Users.Patch updateUser(Directory.Users users, Uid uid,
-            AttributesAccessor attributes) {
+                                                   AttributesAccessor attributes) {
         User content = null;
 
         Name email = attributes.getName();
@@ -775,7 +773,7 @@ public class UserHandler implements FilterVisitor<StringBuilder, Directory.Users
     }
 
     public static Directory.Users.Aliases.Insert createUserAlias(Directory.Users.Aliases service,
-            String userKey, String alias) {
+                                                                 String userKey, String alias) {
         Alias content = new Alias();
         content.setAlias(alias);
         try {
@@ -788,7 +786,7 @@ public class UserHandler implements FilterVisitor<StringBuilder, Directory.Users
     }
 
     public static Directory.Users.Aliases.Delete deleteUserAlias(Directory.Users.Aliases service,
-            String userKey, String alias) {
+                                                                 String userKey, String alias) {
         try {
             return service.delete(userKey, alias);
             // } catch (HttpResponseException e){

@@ -24,32 +24,19 @@
 
 package com.evolveum.polygon.connector.googleapps;
 
-import static com.evolveum.polygon.connector.googleapps.GoogleAppsConnector.*;
-
-import java.io.IOException;
-import java.util.Set;
-
-import org.identityconnectors.common.CollectionUtil;
+import com.google.api.services.directory.Directory;
+import com.google.api.services.directory.model.OrgUnit;
 import org.identityconnectors.common.StringUtil;
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
 import org.identityconnectors.framework.common.exceptions.InvalidAttributeValueException;
-import org.identityconnectors.framework.common.objects.Attribute;
-import org.identityconnectors.framework.common.objects.AttributeBuilder;
-import org.identityconnectors.framework.common.objects.AttributeInfoBuilder;
-import org.identityconnectors.framework.common.objects.AttributeUtil;
-import org.identityconnectors.framework.common.objects.AttributesAccessor;
-import org.identityconnectors.framework.common.objects.ConnectorObject;
-import org.identityconnectors.framework.common.objects.ConnectorObjectBuilder;
-import org.identityconnectors.framework.common.objects.Name;
-import org.identityconnectors.framework.common.objects.ObjectClassInfo;
-import org.identityconnectors.framework.common.objects.ObjectClassInfoBuilder;
-import org.identityconnectors.framework.common.objects.PredefinedAttributeInfos;
-import org.identityconnectors.framework.common.objects.PredefinedAttributes;
-import org.identityconnectors.framework.common.objects.Uid;
+import org.identityconnectors.framework.common.objects.*;
 
-import com.google.api.services.admin.directory.Directory;
-import com.google.api.services.admin.directory.model.OrgUnit;
+import java.io.IOException;
+import java.util.Set;
+
+import static com.evolveum.polygon.connector.googleapps.GoogleAppsConnector.*;
+
 
 /**
  * OrgunitsHandler is a util class to cover all Organizations Unit related
@@ -103,7 +90,7 @@ public class OrgunitsHandler {
     }
 
     public static Directory.Orgunits.Insert createOrgunit(Directory.Orgunits service,
-            AttributesAccessor attributes) {
+                                                          AttributesAccessor attributes) {
 
         OrgUnit resource = new OrgUnit();
 
@@ -137,7 +124,7 @@ public class OrgunitsHandler {
     }
 
     public static Directory.Orgunits.Patch updateOrgunit(Directory.Orgunits service,
-            String orgUnitPath, AttributesAccessor attributes) {
+                                                         String orgUnitPath, AttributesAccessor attributes) {
         OrgUnit resource = null;
 
         Name name = attributes.getName();
@@ -194,7 +181,7 @@ public class OrgunitsHandler {
         }
         try {
             // Full path of the organization unit
-            return service.patch(MY_CUSTOMER_ID, CollectionUtil.newList(orgUnitPath), resource)
+            return service.patch(MY_CUSTOMER_ID, orgUnitPath, resource)
                     .setFields(ORG_UNIT_PATH_ETAG);
             // } catch (HttpResponseException e){
         } catch (IOException e) {
